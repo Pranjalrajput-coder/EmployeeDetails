@@ -2,39 +2,36 @@ package com.torque.data.EmployeeDetails.Controller;
 
 
 import com.torque.data.EmployeeDetails.DTO.Dto;
+import com.torque.data.EmployeeDetails.Entity.EmployeeEntity;
+import com.torque.data.EmployeeDetails.Service.EmployeeService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = {"/employee"})
 public class EmployeeController {
 
-    private List<Dto> employeeList = new ArrayList<>();
+    private final EmployeeService employeeService;
+
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     @GetMapping(path = {"/{employee_id}"})
     public Dto getEmployeeById(@PathVariable Long employee_id) {
-        return new Dto(employee_id, "Tom", "tom@gmail.com", "IT");
-    }
+            return employeeService.getByEmployeeId(employee_id);
+        }
 
     @GetMapping(path = {"/all"})
     public List<Dto> getAllEmployees() {
-        return employeeList;
+        return employeeService.findAllEmployee();
     }
 
 
     @PostMapping
     public Dto createEmployee(@RequestBody Dto dto) {
-        employeeList.add(dto);
-        return dto;
+        return employeeService.create(dto);
     }
 
-
-
-
-//    @PreDestroy
-//    public void stop(){
-//        System.out.println("EmployeeController stopped");
-//    }
 }
