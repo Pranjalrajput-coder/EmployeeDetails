@@ -29,4 +29,6 @@ public class EmployeeEntity {
     private String department;
     private String gender;
     private LocalDate dateOfJoining;
+    private Integer age;
+    private String role;
 }

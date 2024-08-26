@@ -3,8 +3,8 @@ package com.torque.data.EmployeeDetails.Controller;
 
 import com.torque.data.EmployeeDetails.DTO.Dto;
 import com.torque.data.EmployeeDetails.Service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +35,7 @@ public class EmployeeController {
 
 
     @PostMapping
-    public ResponseEntity<Dto> createEmployee(@RequestBody Dto dto) {
+    public ResponseEntity<Dto> createEmployee(@RequestBody @Valid Dto dto) {
         Dto savedEmployee = employeeService.create(dto);
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
@@ -54,14 +54,14 @@ public class EmployeeController {
 
 
     @PutMapping(path = {"/{employee_id}"})
-    public ResponseEntity<Dto> updateEmployeeByID(@PathVariable Long employee_id, @RequestBody Dto dto) {
+    public ResponseEntity<Dto> updateEmployeeByID(@PathVariable Long employee_id, @RequestBody @Valid Dto dto) {
         Dto updatedDto = employeeService.updateDataById(employee_id, dto);
         if(updatedDto != null) return ResponseEntity.ok(updatedDto);
         else return ResponseEntity.notFound().build();
     }
 
     @PatchMapping(path = {"/{employee_id}"})
-    public ResponseEntity<Dto> updatePatchByID(@RequestBody Map<String, Object> patchData, @PathVariable Long employee_id) {
+    public ResponseEntity<Dto> updatePatchByID(@RequestBody @Valid Map<String, Object> patchData, @PathVariable Long employee_id) {
         Dto updatedDto = employeeService.updatePatchByID(employee_id, patchData);
         if (updatedDto != null) return ResponseEntity.ok(updatedDto);
         else return ResponseEntity.notFound().build();
