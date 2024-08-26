@@ -4,9 +4,12 @@ import com.torque.data.EmployeeDetails.DTO.Dto;
 import com.torque.data.EmployeeDetails.Entity.EmployeeEntity;
 import com.torque.data.EmployeeDetails.Repository.EmployeeRepo;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmployeeService {
@@ -32,5 +35,36 @@ public class EmployeeService {
         EmployeeEntity toSaveEntity = mapper.map(dto, EmployeeEntity.class);
         EmployeeEntity employeeEntity = employeeRepo.save(toSaveEntity);
         return mapper.map(employeeEntity, Dto.class);
+    }
+
+    public String deleteByID(Long employeeId) {
+        employeeRepo.deleteById(employeeId);
+        return "Employee by id " + employeeId+ " is deleted";
+    }
+
+    public Dto updateDataById(Long employeeId, Dto dto) {
+            if(isExist(employeeId)) {
+            EmployeeEntity employeeEntity = mapper.map(dto, EmployeeEntity.class);
+            employeeEntity.setId(employeeId);
+            EmployeeEntity employeeEntity1 = employeeRepo.save(employeeEntity);
+            return mapper.map(employeeEntity1, Dto.class);
+        } else{
+            return null;
+        }
+    }
+
+    public boolean isExist(Long employeeId) {
+        return employeeRepo.existsById(employeeId);
+    }
+
+    public Dto updatePatchByID(Long employeeId,Map<String, Object> patchData) {
+//        isExist(employeeId);
+        EmployeeEntity employeeEntity1 = employeeRepo.findById(employeeId).get();
+        patchData.forEach((key, value) -> {
+            Field fieldToBeUpdated = ReflectionUtils.findRequiredField(EmployeeEntity.class, key);
+            fieldToBeUpdated.setAccessible(true);
+            ReflectionUtils.setField(fieldToBeUpdated,employeeEntity1,value);
+        });
+        return mapper.map(employeeRepo.save(employeeEntity1),Dto.class);
     }
 }
