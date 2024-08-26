@@ -54,17 +54,24 @@ public class EmployeeService {
     }
 
     public boolean isExist(Long employeeId) {
-        return employeeRepo.existsById(employeeId);
+        if(employeeRepo.existsById(employeeId)) return true;
+        else return false;
     }
 
     public Dto updatePatchByID(Long employeeId,Map<String, Object> patchData) {
-//        isExist(employeeId);
-        EmployeeEntity employeeEntity1 = employeeRepo.findById(employeeId).get();
-        patchData.forEach((key, value) -> {
-            Field fieldToBeUpdated = ReflectionUtils.findRequiredField(EmployeeEntity.class, key);
-            fieldToBeUpdated.setAccessible(true);
-            ReflectionUtils.setField(fieldToBeUpdated,employeeEntity1,value);
-        });
-        return mapper.map(employeeRepo.save(employeeEntity1),Dto.class);
+        if (isExist(employeeId)) {
+            EmployeeEntity employeeEntity1 = employeeRepo.findById(employeeId).get();
+            patchData.forEach((key, value) -> {
+                Field fieldToBeUpdated = ReflectionUtils.findRequiredField(EmployeeEntity.class, key);
+                fieldToBeUpdated.setAccessible(true);
+                ReflectionUtils.setField(fieldToBeUpdated, employeeEntity1, value);
+            });
+            return mapper.map(employeeRepo.save(employeeEntity1), Dto.class);
+        } else return null;
     }
+
+//    public String deleteAll(Dto dto) {
+//        employeeRepo.deleteAll();
+//        return "All employees are deleted";
+//    }
 }

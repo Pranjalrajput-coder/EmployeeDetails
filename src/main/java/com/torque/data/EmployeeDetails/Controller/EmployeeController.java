@@ -39,6 +39,12 @@ public class EmployeeController {
        return employeeService.deleteByID(employee_id);
     }
 
+//    @DeleteMapping(path = {"/all"})
+//    public String deleteAll(Dto dto) {
+//        return employeeService.deleteAll(dto);
+//    }
+
+
     @PutMapping(path = {"/{employee_id}"})
     public Dto updateEmployeeByID(@PathVariable Long employee_id, @RequestBody Dto dto) {
         Dto updatedDto = employeeService.updateDataById(employee_id, dto);
