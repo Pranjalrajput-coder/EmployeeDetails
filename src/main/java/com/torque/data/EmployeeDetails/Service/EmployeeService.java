@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -21,9 +22,9 @@ public class EmployeeService {
         this.employeeRepo = employeeRepo;
     }
 
-    public Dto getByEmployeeId(Long employeeId) {
-        EmployeeEntity employeeEntity = employeeRepo.findById(employeeId).orElse(null);
-        return mapper.map(employeeEntity, Dto.class);
+    public Optional<Dto> getByEmployeeId(Long employeeId) {
+        Optional<EmployeeEntity> employeeEntity = employeeRepo.findById(employeeId);
+        return employeeEntity.map(employeeEntity1 -> mapper.map(employeeEntity1, Dto.class));
     }
 
     public List<Dto> findAllEmployee() {
@@ -37,9 +38,14 @@ public class EmployeeService {
         return mapper.map(employeeEntity, Dto.class);
     }
 
-    public String deleteByID(Long employeeId) {
-        employeeRepo.deleteById(employeeId);
-        return "Employee by id " + employeeId+ " is deleted";
+    public Boolean deleteByID(Long employeeId) {
+        if(isExist(employeeId)) {
+            employeeRepo.deleteById(employeeId);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public Dto updateDataById(Long employeeId, Dto dto) {

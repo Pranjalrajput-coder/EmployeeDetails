@@ -3,10 +3,14 @@ package com.torque.data.EmployeeDetails.Controller;
 
 import com.torque.data.EmployeeDetails.DTO.Dto;
 import com.torque.data.EmployeeDetails.Service.EmployeeService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = {"/employee"})
@@ -19,24 +23,28 @@ public class EmployeeController {
     }
 
     @GetMapping(path = {"/{employee_id}"})
-    public Dto getEmployeeById(@PathVariable Long employee_id) {
-            return employeeService.getByEmployeeId(employee_id);
-        }
+    public ResponseEntity<Dto> getEmployeeById(@PathVariable Long employee_id) {
+        Optional<Dto> employeeDto = employeeService.getByEmployeeId(employee_id);
+        return employeeDto.map(employeeDto1 -> ResponseEntity.ok(employeeDto1)).orElse(ResponseEntity.notFound().build());
+    }
 
     @GetMapping(path = {"/all"})
-    public List<Dto> getAllEmployees() {
-        return employeeService.findAllEmployee();
+    public ResponseEntity<List<Dto>> getAllEmployees() {
+        return ResponseEntity.ok(employeeService.findAllEmployee());
     }
 
 
     @PostMapping
-    public Dto createEmployee(@RequestBody Dto dto) {
-        return employeeService.create(dto);
+    public ResponseEntity<Dto> createEmployee(@RequestBody Dto dto) {
+        Dto savedEmployee = employeeService.create(dto);
+        return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = {"/{employee_id}"})
-    public String deleteByID(@PathVariable Long employee_id) {
-       return employeeService.deleteByID(employee_id);
+    public ResponseEntity<String> deleteByID(@PathVariable Long employee_id) {
+       boolean isDeleted = employeeService.deleteByID(employee_id);
+       if(isDeleted) return ResponseEntity.ok("Employee by id " + employee_id+ " is deleted");
+       else return ResponseEntity.notFound().build();
     }
 
 //    @DeleteMapping(path = {"/all"})
@@ -46,15 +54,17 @@ public class EmployeeController {
 
 
     @PutMapping(path = {"/{employee_id}"})
-    public Dto updateEmployeeByID(@PathVariable Long employee_id, @RequestBody Dto dto) {
+    public ResponseEntity<Dto> updateEmployeeByID(@PathVariable Long employee_id, @RequestBody Dto dto) {
         Dto updatedDto = employeeService.updateDataById(employee_id, dto);
-        return updatedDto;
+        if(updatedDto != null) return ResponseEntity.ok(updatedDto);
+        else return ResponseEntity.notFound().build();
     }
 
     @PatchMapping(path = {"/{employee_id}"})
-    public Dto updatePatchByID(@RequestBody Map<String, Object> patchData, @PathVariable Long employee_id) {
+    public ResponseEntity<Dto> updatePatchByID(@RequestBody Map<String, Object> patchData, @PathVariable Long employee_id) {
         Dto updatedDto = employeeService.updatePatchByID(employee_id, patchData);
-        return updatedDto;
+        if (updatedDto != null) return ResponseEntity.ok(updatedDto);
+        else return ResponseEntity.notFound().build();
     }
 
 }
