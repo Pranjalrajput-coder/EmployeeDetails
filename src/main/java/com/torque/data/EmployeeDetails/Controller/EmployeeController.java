@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -25,7 +26,9 @@ public class EmployeeController {
     @GetMapping(path = {"/{employee_id}"})
     public ResponseEntity<Dto> getEmployeeById(@PathVariable Long employee_id) {
         Optional<Dto> employeeDto = employeeService.getByEmployeeId(employee_id);
-        return employeeDto.map(employeeDto1 -> ResponseEntity.ok(employeeDto1)).orElse(ResponseEntity.notFound().build());
+        return employeeDto
+                .map(employeeDto1 -> ResponseEntity.ok(employeeDto1))
+                .orElseThrow(() -> new NoSuchElementException());
     }
 
     @GetMapping(path = {"/all"})
