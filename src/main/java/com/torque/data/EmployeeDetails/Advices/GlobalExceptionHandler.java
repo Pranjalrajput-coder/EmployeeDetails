@@ -17,33 +17,36 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataNotFoundException.class)
-    public ResponseEntity<ApiErrors> customElementException(DataNotFoundException e) {
+    public ResponseEntity<ApiResponse<?>> customElementException(DataNotFoundException e) {
         ApiErrors apiErrors = ApiErrors
                 .builder()
                 .status(HttpStatus.NOT_FOUND)
                 .message(e.getMessage())
                 .build();
-        return new ResponseEntity<>(apiErrors, HttpStatus.NOT_FOUND);
+        return buildError(apiErrors);
     }
 
-    @ExceptionHandler(Exception.class)  // This will apply on validation exception for Inputsin DTO and Entites
-    public ResponseEntity<ApiErrors> customInternalServerError(Exception e) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<?>> customInternalServerError(Exception e) {
         ApiErrors apiErrors = ApiErrors
                 .builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .message(e.getMessage())
                 .build();
-        return new ResponseEntity<>(apiErrors, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildError(apiErrors);
     }
 
+
+    // This will apply on validation exception for Inputs in DTO and Entites
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrors> bindingTheErrors(MethodArgumentNotValidException e) {
+    public ResponseEntity<ApiResponse<?>> bindingTheErrors(MethodArgumentNotValidException e) {
         List<String> errors = e
                 .getBindingResult()
                 .getAllErrors()
                 .stream()
                 .map(error -> error.getDefaultMessage())
                 .collect(Collectors.toList());
+        // collect all the errors which can not be easily identify, so it's just map in simple format
 
         ApiErrors apiErrors = ApiErrors
                 .builder()
@@ -51,6 +54,11 @@ public class GlobalExceptionHandler {
                 .message("Validation Error")
                 .subErrors(errors)
                 .build();
-        return new ResponseEntity<>(apiErrors, HttpStatus.BAD_REQUEST);
+        // return it into a ApiErrors object which reflect in PostMan API
+        return buildError(apiErrors);
+    }
+
+    public ResponseEntity<ApiResponse<?>> buildError(ApiErrors apiErrors) {
+        return new ResponseEntity<>(new ApiResponse<>(apiErrors), apiErrors.getStatus());
     }
 }
