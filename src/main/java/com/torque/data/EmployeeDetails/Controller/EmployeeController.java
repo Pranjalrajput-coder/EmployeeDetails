@@ -2,6 +2,7 @@ package com.torque.data.EmployeeDetails.Controller;
 
 
 import com.torque.data.EmployeeDetails.DTO.Dto;
+import com.torque.data.EmployeeDetails.Exceptions.DataNotFoundException;
 import com.torque.data.EmployeeDetails.Service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class EmployeeController {
         Optional<Dto> employeeDto = employeeService.getByEmployeeId(employee_id);
         return employeeDto
                 .map(employeeDto1 -> ResponseEntity.ok(employeeDto1))
-                .orElseThrow(() -> new NoSuchElementException());
+                .orElseThrow(() -> new DataNotFoundException("Employee not found for this ID : " + employee_id));
     }
 
     @GetMapping(path = {"/all"})
@@ -47,7 +48,7 @@ public class EmployeeController {
     public ResponseEntity<String> deleteByID(@PathVariable Long employee_id) {
        boolean isDeleted = employeeService.deleteByID(employee_id);
        if(isDeleted) return ResponseEntity.ok("Employee by id " + employee_id+ " is deleted");
-       else return ResponseEntity.notFound().build();
+       else return new ResponseEntity<>("Employee not found for this ID : " + employee_id, HttpStatus.NOT_FOUND);
     }
 
 //    @DeleteMapping(path = {"/all"})

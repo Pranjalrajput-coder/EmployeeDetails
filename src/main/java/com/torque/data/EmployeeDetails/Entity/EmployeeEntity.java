@@ -16,9 +16,6 @@ import java.time.LocalDate;
 @Table(name = "employee")
 public class EmployeeEntity {
 
-    public void setId(long id) {
-        this.id = id;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "last_onwards")// auto_increment of IDs
