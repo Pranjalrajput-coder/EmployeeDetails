@@ -7,7 +7,7 @@ phases:
   build:
     commands:
       - echo Build Process is Started, Please Wait...
-      - mvn package
+      - mvn clean package -DskipTests -Dspring.profiles.active=prod
   post_build:
     commands:
       - echo Build is Completed ✅
