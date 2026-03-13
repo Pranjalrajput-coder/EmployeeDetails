@@ -5,6 +5,7 @@ import com.torque.data.EmployeeDetails.DTO.Dto;
 import com.torque.data.EmployeeDetails.Exceptions.DataNotFoundException;
 import com.torque.data.EmployeeDetails.Service.EmployeeService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = {"/employee"})
 public class EmployeeController {
+
+
+    @Value("${my.variable}")
+    private String myVariable;
 
     private final EmployeeService employeeService;
 
