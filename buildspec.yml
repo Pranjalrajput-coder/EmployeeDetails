@@ -1,0 +1,17 @@
+version: 0.2
+
+phase:
+  install:
+    runtime-versions:
+      java: corretto17
+  build:
+    commands:
+      - echo Build Process is Started, Please Wait...
+      - mvn package
+  post_build:
+    commands:
+      - echo Build is Completed ✅
+artifacts:
+  files:
+    - target/*.jar
+  discard-paths: yes
